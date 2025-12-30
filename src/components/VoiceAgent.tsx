@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useConversation } from '@elevenlabs/react';
 import { Volume2, VolumeX, Loader } from 'lucide-react';
 
@@ -21,22 +21,28 @@ export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
         return;
       }
 
-      // Simple connection without overrides - like V1 that worked
+      // SIMPLEST connection - exactly like what worked before
       await conversation.startSession({
         agentId: agentId,
-        connectionType: 'webrtc',
+        connectionType: 'webrtc'
       });
       
-      // Log what mode was selected for debugging
-      console.log(`Started session in ${mode} mode for ${userName}`);
+      console.log(`✅ Connected! Mode: ${mode}, User: ${userName}`);
     } catch (error) {
-      console.error('Failed to start conversation:', error);
+      console.error('❌ Failed to start conversation:', error);
     }
   }, [conversation, userName, mode]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
   }, [conversation]);
+
+  // Auto-start when component loads
+  useEffect(() => {
+    if (conversation.status === 'disconnected') {
+      startConversation();
+    }
+  }, []);
 
   const getMoodEmoji = () => {
     switch (mode) {
@@ -83,11 +89,7 @@ export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
         </div>
 
         <div className="controls">
-          {conversation.status === 'disconnected' ? (
-            <button className="control-btn primary" onClick={startConversation}>
-              Start Session
-            </button>
-          ) : (
+          {conversation.status === 'connected' && (
             <button className="control-btn secondary" onClick={stopConversation}>
               End Session
             </button>
@@ -95,7 +97,7 @@ export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
         </div>
 
         <div className="tips">
-          <p>💡 Speak naturally and let the conversation flow</p>
+          <p>💡 Just say "Hi, my name is {userName}" to introduce yourself</p>
           <p>🎧 Adjust your volume for optimal comfort</p>
         </div>
       </div>

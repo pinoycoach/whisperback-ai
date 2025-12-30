@@ -128,28 +128,3 @@ export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentPro
     </div>
   );
 }
-<div className="controls">
-  {conversation.status === 'connected' && (
-    <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-      <button 
-        className="control-btn secondary" 
-        onClick={async () => {
-          await conversation.endSession();
-          setTimeout(() => window.location.reload(), 300);
-        }}
-      >
-        End Session
-      </button>
-      <button 
-        className="control-btn primary" 
-        onClick={() => window.location.reload()}
-        style={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          border: 'none'
-        }}
-      >
-        🔄 New Session
-      </button>
-    </div>
-  )}
-</div>

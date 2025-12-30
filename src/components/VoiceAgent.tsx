@@ -2,12 +2,24 @@ import { useCallback, useEffect } from 'react';
 import { useConversation } from '@elevenlabs/react';
 import { Volume2, VolumeX, Loader } from 'lucide-react';
 
+interface VertexAIEnhancement {
+  emotionalTone: string;
+  stressLevel: number;
+  energyLevel: number;
+  suggestedTriggers: string[];
+  conversationPace: string;
+  personalizedApproach: string;
+  detectedNeeds: string[];
+  sessionProgress: string;
+}
+
 interface VoiceAgentProps {
   userName: string;
   mode: 'sleep' | 'relax' | 'focus';
+  aiInsights: VertexAIEnhancement | null;
 }
 
-export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
+export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentProps) {
   const conversation = useConversation();
 
   const startConversation = useCallback(async () => {
@@ -17,27 +29,29 @@ export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
       const agentId = import.meta.env.VITE_ELEVENLABS_AGENT_ID;
       
       if (!agentId) {
-        console.error('Agent ID not found. Please set VITE_ELEVENLABS_AGENT_ID in your .env file');
+        console.error('Agent ID not found');
         return;
       }
 
-      // SIMPLEST connection - exactly like what worked before
       await conversation.startSession({
         agentId: agentId,
         connectionType: 'webrtc'
       });
       
       console.log(`✅ Connected! Mode: ${mode}, User: ${userName}`);
+      
+      if (aiInsights) {
+        console.log('🎯 AI Insights loaded:', aiInsights);
+      }
     } catch (error) {
       console.error('❌ Failed to start conversation:', error);
     }
-  }, [conversation, userName, mode]);
+  }, [conversation, userName, mode, aiInsights]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
   }, [conversation]);
 
-  // Auto-start when component loads
   useEffect(() => {
     if (conversation.status === 'disconnected') {
       startConversation();
@@ -68,6 +82,16 @@ export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
         <div className="greeting">
           <h2>Hello, {userName} {getMoodEmoji()}</h2>
           <p className="mood-text">{getMoodText()}</p>
+          {aiInsights && (
+            <p style={{ 
+              fontSize: 14, 
+              opacity: 0.7, 
+              marginTop: 8,
+              fontStyle: 'italic'
+            }}>
+              Your emotional state: {aiInsights.emotionalTone}
+            </p>
+          )}
         </div>
 
         <div className={`voice-orb ${conversation.status}`}>
@@ -97,10 +121,35 @@ export default function VoiceAgent({ userName, mode }: VoiceAgentProps) {
         </div>
 
         <div className="tips">
-          <p>💡 Just say "Hi, my name is {userName}" to introduce yourself</p>
+          <p>💡 AI will ask your name for a personal connection</p>
           <p>🎧 Adjust your volume for optimal comfort</p>
         </div>
       </div>
     </div>
   );
 }
+<div className="controls">
+  {conversation.status === 'connected' && (
+    <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+      <button 
+        className="control-btn secondary" 
+        onClick={async () => {
+          await conversation.endSession();
+          setTimeout(() => window.location.reload(), 300);
+        }}
+      >
+        End Session
+      </button>
+      <button 
+        className="control-btn primary" 
+        onClick={() => window.location.reload()}
+        style={{ 
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          border: 'none'
+        }}
+      >
+        🔄 New Session
+      </button>
+    </div>
+  )}
+</div>

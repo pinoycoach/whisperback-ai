@@ -6,25 +6,42 @@ import './App.css';
 // === VERTEX AI INTEGRATION ===
 const CLOUD_FUNCTION_URL = 'https://us-central1-patient-advocate-hackathon.cloudfunctions.net/enhanceConversation';
 
+interface VertexAIEnhancement {
+  emotionalTone: string;
+  stressLevel: number;
+  energyLevel: number;
+  suggestedTriggers: string[];
+  conversationPace: string;
+  personalizedApproach: string;
+  detectedNeeds: string[];
+  sessionProgress: string;
+}
+
 function App() {
   const [userName, setUserName] = useState('');
   const [selectedMode, setSelectedMode] = useState<'sleep' | 'relax' | 'focus'>('relax');
   const [started, setStarted] = useState(false);
   const [vertexAIActive, setVertexAIActive] = useState(false);
+  const [aiInsights, setAiInsights] = useState<VertexAIEnhancement | null>(null);
 
-  // Vertex AI enhancement - now NON-BLOCKING
+  // Vertex AI enhancement function
   async function enhanceWithVertexAI(
     message: string,
     mode: 'sleep' | 'relax' | 'focus',
     userName: string
-  ) {
+  ): Promise<VertexAIEnhancement | null> {
     try {
-      console.log('🧠 Calling Vertex AI in background...');
+      console.log('🧠 Calling Vertex AI...');
       
       const response = await fetch(CLOUD_FUNCTION_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, mode, userName })
+        body: JSON.stringify({ 
+          message, 
+          mode, 
+          userName,
+          timestamp: new Date().toISOString()
+        })
       });
 
       const data = await response.json();
@@ -32,9 +49,10 @@ function App() {
       if (data.success) {
         console.log('✅ Vertex AI Enhancement:', data.enhancement);
         setVertexAIActive(true);
+        setAiInsights(data.enhancement);
         return data.enhancement;
       } else {
-        console.log('⚠️ Vertex AI failed, continuing without enhancement');
+        console.log('⚠️ Vertex AI failed:', data.error);
         return null;
       }
     } catch (error) {
@@ -44,55 +62,164 @@ function App() {
   }
 
   const handleStart = async () => {
-    // Check userName
     if (!userName.trim()) {
       alert('Please enter your name first! 😊');
       return;
     }
 
-    // Start conversation IMMEDIATELY (don't wait for Vertex AI)
     console.log(`Starting session for ${userName} in ${selectedMode} mode`);
-    setStarted(true);
-
-    // Call Vertex AI in background (non-blocking)
+    
+    // Call Vertex AI for initial analysis
     const initialMessage = `Hi, I'm ${userName}. I want to ${selectedMode}.`;
-    enhanceWithVertexAI(initialMessage, selectedMode, userName).then(enhancement => {
-      if (enhancement) {
-        console.log('🎯 Vertex AI personalization loaded!');
-        console.log('Emotional State:', enhancement.emotionalTone);
-        console.log('Energy Level:', enhancement.energyLevel);
-        console.log('Suggested Triggers:', enhancement.suggestedTriggers);
-      }
-    });
+    const enhancement = await enhanceWithVertexAI(initialMessage, selectedMode, userName);
+
+    if (enhancement) {
+      console.log('🎯 Vertex AI Analysis Complete!');
+      console.log('📊 Emotional Tone:', enhancement.emotionalTone);
+      console.log('😰 Stress Level:', enhancement.stressLevel);
+      console.log('⚡ Energy Level:', enhancement.energyLevel);
+      console.log('🎭 Suggested Triggers:', enhancement.suggestedTriggers);
+    }
+
+    // Start the session
+    setStarted(true);
   };
 
   if (started) {
     return (
       <>
-        {/* Vertex AI Badge */}
-        {vertexAIActive && (
+        {/* Vertex AI Intelligence Dashboard */}
+        {vertexAIActive && aiInsights && (
           <div style={{
             position: 'fixed',
             top: 20,
             right: 20,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            padding: '12px 24px',
-            borderRadius: 25,
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(10px)',
+            padding: '20px',
+            borderRadius: 15,
             color: 'white',
-            fontSize: 14,
-            fontWeight: 600,
-            boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)',
+            fontSize: 12,
             zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
+            minWidth: 280,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            border: '1px solid rgba(102, 126, 234, 0.3)'
           }}>
-            🧠 Vertex AI Active
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              marginBottom: 15,
+              paddingBottom: 15,
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <div style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#4ade80',
+                animation: 'pulse 2s ease-in-out infinite'
+              }}></div>
+              <span style={{ fontWeight: 600, fontSize: 14 }}>🧠 Vertex AI Active</span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <div style={{ opacity: 0.7, marginBottom: 4 }}>Emotional State</div>
+                <div style={{ 
+                  fontSize: 14, 
+                  fontWeight: 600,
+                  color: '#a78bfa'
+                }}>
+                  {aiInsights.emotionalTone.charAt(0).toUpperCase() + aiInsights.emotionalTone.slice(1)}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ opacity: 0.7, marginBottom: 4 }}>Stress Level</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{
+                    flex: 1,
+                    height: 6,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: 3,
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${aiInsights.stressLevel * 10}%`,
+                      height: '100%',
+                      background: aiInsights.stressLevel > 7 ? '#ef4444' : 
+                                 aiInsights.stressLevel > 4 ? '#f59e0b' : '#4ade80',
+                      transition: 'all 0.3s ease'
+                    }}></div>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>
+                    {aiInsights.stressLevel}/10
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ opacity: 0.7, marginBottom: 4 }}>Energy Level</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{
+                    flex: 1,
+                    height: 6,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: 3,
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${aiInsights.energyLevel * 10}%`,
+                      height: '100%',
+                      background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+                      transition: 'all 0.3s ease'
+                    }}></div>
+                  </div>
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>
+                    {aiInsights.energyLevel}/10
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ opacity: 0.7, marginBottom: 6 }}>ASMR Triggers</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {aiInsights.suggestedTriggers.slice(0, 3).map((trigger, i) => (
+                    <span key={i} style={{
+                      background: 'rgba(167, 139, 250, 0.2)',
+                      padding: '4px 10px',
+                      borderRadius: 12,
+                      fontSize: 11,
+                      border: '1px solid rgba(167, 139, 250, 0.3)'
+                    }}>
+                      {trigger}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{
+                marginTop: 8,
+                padding: 12,
+                background: 'rgba(167, 139, 250, 0.1)',
+                borderRadius: 8,
+                border: '1px solid rgba(167, 139, 250, 0.2)',
+                fontSize: 11,
+                lineHeight: 1.5,
+                opacity: 0.9
+              }}>
+                💡 {aiInsights.personalizedApproach}
+              </div>
+            </div>
           </div>
         )}
         
-        {/* Pass userName to VoiceAgent */}
-        <VoiceAgent userName={userName} mode={selectedMode} />
+        <VoiceAgent 
+          userName={userName} 
+          mode={selectedMode}
+          aiInsights={aiInsights}
+        />
       </>
     );
   }
@@ -105,7 +232,7 @@ function App() {
           <h1 className="app-title">WhisperBack</h1>
         </div>
         
-        <p className="tagline">Your AI companion for soothing ASMR conversations</p>
+        <p className="tagline">AI-powered ASMR with emotional intelligence</p>
         
         <div className="setup-form">
           <div className="input-group">
@@ -154,7 +281,7 @@ function App() {
           </button>
         </div>
 
-        <p className="hint">🎧 Headphones recommended for the best experience</p>
+        <p className="hint">🧠 Powered by Google Vertex AI + ElevenLabs</p>
       </div>
     </div>
   );

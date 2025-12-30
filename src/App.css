@@ -1,0 +1,334 @@
+:root {
+  --color-primary: #9b87f5;
+  --color-secondary: #d6bcfa;
+  --color-accent: #fca5a5;
+  --color-bg-dark: #1a1a2e;
+  --color-bg-medium: #16213e;
+  --color-text-light: #f0f0f0;
+  --color-text-muted: #b8b8d1;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, var(--color-bg-dark) 0%, var(--color-bg-medium) 100%);
+  color: var(--color-text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.welcome-screen {
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.logo-icon {
+  color: var(--color-primary);
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.app-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.5rem;
+  font-weight: 300;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+}
+
+.tagline {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  font-weight: 300;
+}
+
+.setup-form {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  border: 1px solid rgba(155, 135, 245, 0.2);
+}
+
+.input-group {
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.name-input {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(155, 135, 245, 0.3);
+  border-radius: 12px;
+  color: var(--color-text-light);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.name-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mode-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.mode-btn {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(155, 135, 245, 0.3);
+  border-radius: 12px;
+  color: var(--color-text-light);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.mode-btn:hover {
+  background: rgba(155, 135, 245, 0.1);
+  border-color: var(--color-primary);
+  transform: translateY(-2px);
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-color: var(--color-primary);
+  transform: scale(1.05);
+}
+
+.start-btn {
+  width: 100%;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  margin-top: 1rem;
+}
+
+.start-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(155, 135, 245, 0.4);
+}
+
+.start-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint {
+  margin-top: 2rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.voice-agent-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.agent-content {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+.greeting h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 0.5rem;
+}
+
+.mood-text {
+  color: var(--color-text-muted);
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.voice-orb {
+  width: 250px;
+  height: 250px;
+  margin: 3rem auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(155, 135, 245, 0.2), rgba(252, 165, 165, 0.2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.5s ease;
+}
+
+.voice-orb.connected {
+  background: linear-gradient(135deg, rgba(155, 135, 245, 0.4), rgba(252, 165, 165, 0.4));
+  box-shadow: 0 0 60px rgba(155, 135, 245, 0.5);
+}
+
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary);
+  animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+.orb-icon {
+  color: var(--color-primary);
+  z-index: 1;
+}
+
+.orb-icon.speaking {
+  animation: speak 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes speak {
+  from { transform: scale(1); }
+  to { transform: scale(1.15); }
+}
+
+.orb-icon.rotating {
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.status-text {
+  font-size: 1.3rem;
+  color: var(--color-text-muted);
+  margin-bottom: 3rem;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.control-btn {
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.control-btn.primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  color: white;
+}
+
+.control-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(155, 135, 245, 0.4);
+}
+
+.control-btn.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-light);
+  border: 2px solid rgba(155, 135, 245, 0.3);
+}
+
+.control-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--color-primary);
+}
+
+.tips {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(155, 135, 245, 0.2);
+}
+
+.tips p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 2.5rem;
+  }
+  
+  .voice-orb {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .mode-selector {
+    grid-template-columns: 1fr;
+  }
+}

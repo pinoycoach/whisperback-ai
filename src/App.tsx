@@ -15,6 +15,7 @@ interface VertexAIEnhancement {
   personalizedApproach: string;
   detectedNeeds: string[];
   sessionProgress: string;
+  progressNote?: string;
 }
 
 function App() {
@@ -28,7 +29,9 @@ function App() {
   async function enhanceWithVertexAI(
     message: string,
     mode: 'sleep' | 'relax' | 'focus',
-    userName: string
+    userName: string,
+    previousStress?: number,
+    sessionDuration?: number
   ): Promise<VertexAIEnhancement | null> {
     try {
       console.log('🧠 Calling Vertex AI...');
@@ -40,6 +43,8 @@ function App() {
           message, 
           mode, 
           userName,
+          previousStress,
+          sessionDuration,
           timestamp: new Date().toISOString()
         })
       });
@@ -102,8 +107,10 @@ function App() {
             fontSize: 12,
             zIndex: 1000,
             minWidth: 280,
+            maxWidth: 320,
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-            border: '1px solid rgba(102, 126, 234, 0.3)'
+            border: '1px solid rgba(102, 126, 234, 0.3)',
+            transition: 'all 0.3s ease'
           }}>
             <div style={{
               display: 'flex',
@@ -129,7 +136,8 @@ function App() {
                 <div style={{ 
                   fontSize: 14, 
                   fontWeight: 600,
-                  color: '#a78bfa'
+                  color: '#a78bfa',
+                  transition: 'all 0.5s ease'
                 }}>
                   {aiInsights.emotionalTone.charAt(0).toUpperCase() + aiInsights.emotionalTone.slice(1)}
                 </div>
@@ -150,7 +158,7 @@ function App() {
                       height: '100%',
                       background: aiInsights.stressLevel > 7 ? '#ef4444' : 
                                  aiInsights.stressLevel > 4 ? '#f59e0b' : '#4ade80',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.8s ease'
                     }}></div>
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 600 }}>
@@ -173,7 +181,7 @@ function App() {
                       width: `${aiInsights.energyLevel * 10}%`,
                       height: '100%',
                       background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.8s ease'
                     }}></div>
                   </div>
                   <span style={{ fontSize: 14, fontWeight: 600 }}>
@@ -191,13 +199,28 @@ function App() {
                       padding: '4px 10px',
                       borderRadius: 12,
                       fontSize: 11,
-                      border: '1px solid rgba(167, 139, 250, 0.3)'
+                      border: '1px solid rgba(167, 139, 250, 0.3)',
+                      transition: 'all 0.3s ease'
                     }}>
                       {trigger}
                     </span>
                   ))}
                 </div>
               </div>
+
+              {aiInsights.progressNote && (
+                <div style={{
+                  marginTop: 4,
+                  padding: 8,
+                  background: 'rgba(74, 222, 128, 0.1)',
+                  borderRadius: 6,
+                  fontSize: 10,
+                  color: '#4ade80',
+                  border: '1px solid rgba(74, 222, 128, 0.2)'
+                }}>
+                  📉 {aiInsights.progressNote}
+                </div>
+              )}
 
               <div style={{
                 marginTop: 8,
@@ -219,6 +242,8 @@ function App() {
           userName={userName} 
           mode={selectedMode}
           aiInsights={aiInsights}
+          onUpdateInsights={setAiInsights}
+          onUpdateVertexStatus={setVertexAIActive}
         />
       </>
     );

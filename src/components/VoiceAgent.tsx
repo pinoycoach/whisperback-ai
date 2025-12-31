@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useConversation } from '@elevenlabs/react';
 import { Volume2, VolumeX, Loader } from 'lucide-react';
 
@@ -11,16 +11,21 @@ interface VertexAIEnhancement {
   personalizedApproach: string;
   detectedNeeds: string[];
   sessionProgress: string;
+  progressNote?: string;
 }
 
 interface VoiceAgentProps {
   userName: string;
   mode: 'sleep' | 'relax' | 'focus';
   aiInsights: VertexAIEnhancement | null;
+  onUpdateInsights: (insights: VertexAIEnhancement) => void;
+  onUpdateVertexStatus: (status: boolean) => void;
 }
 
-export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentProps) {
+export default function VoiceAgent({ userName, mode, aiInsights, onUpdateInsights, onUpdateVertexStatus }: VoiceAgentProps) {
   const conversation = useConversation();
+  const [sessionTime, setSessionTime] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const startConversation = useCallback(async () => {
     try {
@@ -52,11 +57,54 @@ export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentPro
     await conversation.endSession();
   }, [conversation]);
 
+  // 🔥 REAL-TIME INTELLIGENCE - Updates every 30 seconds!
+  useEffect(() => {
+    if (conversation.status !== 'connected') return;
+    
+    const updateInterval = setInterval(async () => {
+      setSessionTime(prev => prev + 30);
+      
+      // Call Vertex AI for updated analysis
+      setIsAnalyzing(true);
+      
+      try {
+        console.log(`🔄 Requesting update at ${sessionTime + 30}s...`);
+        
+        const response = await fetch('https://us-central1-patient-advocate-hackathon.cloudfunctions.net/enhanceConversation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: `Session update at ${sessionTime + 30}s`,
+            mode: mode,
+            userName: userName,
+            previousStress: aiInsights?.stressLevel || 5,
+            sessionDuration: sessionTime + 30
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          console.log(`📊 Update at ${sessionTime + 30}s:`, data.enhancement);
+          console.log(`📉 Stress: ${aiInsights?.stressLevel} → ${data.enhancement.stressLevel}`);
+          onUpdateInsights(data.enhancement);
+          onUpdateVertexStatus(true);
+        }
+      } catch (error) {
+        console.error('❌ Update error:', error);
+      } finally {
+        setIsAnalyzing(false);
+      }
+    }, 30000); // Every 30 seconds
+    
+    return () => clearInterval(updateInterval);
+  }, [conversation.status, sessionTime, aiInsights, mode, userName, onUpdateInsights, onUpdateVertexStatus]);
+
   useEffect(() => {
     if (conversation.status === 'disconnected') {
       startConversation();
     }
-  }, []);
+  }, [startConversation, conversation.status]);
 
   const getMoodEmoji = () => {
     switch (mode) {
@@ -92,6 +140,16 @@ export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentPro
               Your emotional state: {aiInsights.emotionalTone}
             </p>
           )}
+          {isAnalyzing && (
+            <p style={{
+              fontSize: 11,
+              color: '#a78bfa',
+              marginTop: 4,
+              animation: 'pulse 1.5s ease-in-out infinite'
+            }}>
+              🧠 Analyzing...
+            </p>
+          )}
         </div>
 
         <div className={`voice-orb ${conversation.status}`}>
@@ -114,7 +172,13 @@ export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentPro
 
         <div className="controls">
           {conversation.status === 'connected' && (
-            <button className="control-btn secondary" onClick={stopConversation}>
+            <button 
+              className="control-btn secondary" 
+              onClick={async () => {
+                await stopConversation();
+                setTimeout(() => window.location.reload(), 300);
+              }}
+            >
               End Session
             </button>
           )}
@@ -123,6 +187,11 @@ export default function VoiceAgent({ userName, mode, aiInsights }: VoiceAgentPro
         <div className="tips">
           <p>💡 AI will ask your name for a personal connection</p>
           <p>🎧 Adjust your volume for optimal comfort</p>
+          {sessionTime > 0 && (
+            <p style={{ color: '#4ade80', fontSize: 12, marginTop: 8 }}>
+              ⏱️ Session: {Math.floor(sessionTime / 60)}:{(sessionTime % 60).toString().padStart(2, '0')}
+            </p>
+          )}
         </div>
       </div>
     </div>

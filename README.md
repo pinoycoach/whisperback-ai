@@ -1,14 +1,14 @@
 # 🧠 WhisperBack - Real-Time Conversational ASMR
 
-**🏆 Built for Google Cloud x ElevenLabs AI Hackathon 2024**
+**🏆 Built for Google Cloud x ElevenLabs AI Hackathon 2025**
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://whisperback-ai.vercel.app)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://whisperback.app)
 [![Powered by Vertex AI](https://img.shields.io/badge/Vertex%20AI-Gemini%202.5-blue)](https://cloud.google.com/vertex-ai)
 [![ElevenLabs](https://img.shields.io/badge/ElevenLabs-Conversational%20AI-purple)](https://elevenlabs.io)
 
 > The world's first ASMR experience that adapts to your emotional state in real-time.
 
-**[Live Demo](https://whisperback-ai.vercel.app)** • **[Video Demo](#)** • **[Devpost](#)**
+**[Live Demo](https://whisperback.app)** • **[Video Demo](https://vimeo.com/1150634017?fl=ip&fe=ec)** • **[Devpost](https://devpost.com/software/whisperback)**
 
 ---
 
@@ -95,7 +95,7 @@ It combines Google's Vertex AI with ElevenLabs Conversational AI to create an AS
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/whisperback-ai.git
+   git clone https://github.com/pinoycoach/whisperback-ai.git
    cd whisperback-ai
    ```
 
@@ -172,11 +172,11 @@ Personalized ASMR Voice Response
 
 ### Watch It In Action
 
-**[📹 Demo Video](YOUR_VIDEO_LINK_HERE)**
+**[📹 Demo Video](https://vimeo.com/1150634017?fl=ip&fe=ec)**
 
 ### Try It Yourself
 
-**[🚀 Live Demo](https://whisperback-ai.vercel.app)**
+**[🚀 Live Demo](https://whisperback.app)**
 
 1. Enter your name
 2. Choose a mode (Sleep, Relax, or Focus)
@@ -321,10 +321,10 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## 👨‍💻 Developer
 
-**Built by Cash** for Google Cloud x ElevenLabs AI Hackathon 2024
+**Built by Napoleon Beltran** for Google Cloud x ElevenLabs AI Hackathon 2025
 
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-- Live Demo: [whisperback-ai.vercel.app](https://whisperback-ai.vercel.app)
+- GitHub: [@YOUR_USERNAME](https://github.com/pinoycoach)
+- Live Demo: [whisperback.app](https://whisperback.app)
 
 ---
 
@@ -372,6 +372,6 @@ For questions or issues:
 
 **Built with ❤️ using Google Vertex AI and ElevenLabs**
 
-**[Try WhisperBack Now →](https://whisperback-ai.vercel.app)**
+**[Try WhisperBack Now →](https://whisperback-ai-5te4.vercel.app/)**
 
 </div>
